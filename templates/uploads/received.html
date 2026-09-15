@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Invoice received — InvoXcel{% endblock %}
+
+{% block content %}
+  <h2>Invoice received</h2>
+  <p class="lede">The source document is filed. Extraction is not part of this step.</p>
+  <table class="register">
+    <thead>
+      <tr>
+        <th scope="col">Original name</th>
+        <th scope="col">Status</th>
+        <th scope="col">Received</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ document.original_filename }}</td>
+        <td>{{ document.status }}</td>
+        <td>{{ document.created_at|date:"j M Y, H:i" }} UTC</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><a href="{% url 'uploads:upload' %}">Upload another</a></p>
+{% endblock %}

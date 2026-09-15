@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="InvoXcel helps you choose your invoice columns, review the details, and prepare your spreadsheet.">
+  <title>InvoXcel · Invoices, ready for your spreadsheet</title>
+  {% include "invoxcel/partials/styles.html" %}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h3m6 0h7M4 17h9m6 0h1"/><circle cx="10" cy="7" r="3"/><circle cx="16" cy="17" r="3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0 0-3l-1-1a2 2 0 0 0-3 0L5 15z"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 10 5-10 5L2 8zm-9 10 9 5 9-5M3 18l9 5 9-5"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></symbol>
+  </svg>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="InvoXcel home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M6 4h20l6 6v22H6z" fill="currentColor"/><path d="M26 4v6h6M12 12l10 14m0-14L12 26M26 15h3m-3 5h3m-3 5h3" fill="none" stroke="white" stroke-width="2"/></svg></span>
+      <span>InvoXcel</span>
+    </a>
+    <nav class="public-nav" aria-label="Main navigation">
+      <a href="#home" data-nav="home">Overview</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#workspace">Sample workspace</a>
+    </nav>
+    <nav class="flow-nav" aria-label="Invoice workflow" hidden>
+      <a href="#home"><span>1</span> Upload</a><span class="step-line"></span>
+      <a href="#columns" data-nav="columns"><span>2</span> Choose columns</a><span class="step-line"></span>
+      <a href="#workspace" data-nav="workspace"><span>3</span> Review</a>
+    </nav>
+    <a class="button button-small button-outline header-login" href="#login">Log in <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+  </header>
+  <main id="main" tabindex="-1">
+    {% include "invoxcel/partials/home.html" %}
+    {% include "invoxcel/partials/login.html" %}
+    {% include "invoxcel/partials/columns.html" %}
+    {% include "invoxcel/partials/workspace.html" %}
+  </main>
+  <!-- MOCK DATA: replaced by backend data in a future iteration -->
+  <dialog id="processing-dialog" aria-labelledby="processing-title">
+    <button class="icon-button dialog-close" type="button" data-close-dialog aria-label="Close processing preview"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <span class="large-icon"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></span>
+    <h2 id="processing-title">Putting everything in its place</h2>
+    <p>Your chosen columns are taking shape.</p>
+    <div class="progress-label"><span>Extracting invoice data</span><strong>67%</strong></div>
+    <progress value="67" max="100" aria-label="Sample extraction progress">67%</progress>
+    <p class="small muted">2 of 3 sample invoices complete</p>
+    <div class="processing-file"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg><span>western-freight-september.pdf</span><span class="status status-neutral">Processing</span></div>
+    <a class="button button-primary button-full" href="#workspace" data-close-dialog>Open sample results</a>
+  </dialog>
+  <!-- MOCK DATA: replaced by backend data in a future iteration -->
+  <dialog id="source-dialog" class="source-dialog" aria-labelledby="source-dialog-title"><div class="source-dialog-heading"><h2 id="source-dialog-title">Source document</h2><button class="icon-button" type="button" data-close-source aria-label="Close enlarged source"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div><div id="enlarged-source"></div></dialog>
+  <!-- MOCK DATA: replaced by backend data in a future iteration -->
+  <div class="toast" id="preview-message" role="status" hidden><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span></span><button class="icon-button" type="button" data-dismiss-message aria-label="Dismiss notification"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+  {% include "invoxcel/partials/interactions.html" %}
+</body>
+</html>

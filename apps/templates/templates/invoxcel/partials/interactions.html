@@ -1,0 +1,195 @@
+<script>
+  // Visual prototype only. All invoice content comes from the mock HTML above.
+  // No requests, form submissions, file reads, authentication, or storage.
+  (() => {
+    const screens = [...document.querySelectorAll('[data-screen]')];
+    const processingDialog = document.getElementById('processing-dialog');
+    const sourceDialog = document.getElementById('source-dialog');
+    const message = document.getElementById('preview-message');
+    const sourcePane = document.getElementById('source-pane');
+
+    function showScreen(moveFocus = false) {
+      const target = location.hash.slice(1) || 'home';
+      const screenName = screens.some(screen => screen.id === target) ? target : 'home';
+      screens.forEach(screen => { screen.hidden = screen.id !== screenName; });
+      const inWorkflow = screenName === 'columns' || screenName === 'workspace';
+      document.querySelector('.public-nav').hidden = inWorkflow;
+      document.querySelector('.flow-nav').hidden = !inWorkflow;
+      document.querySelectorAll('[data-nav]').forEach(link => {
+        if (link.dataset.nav === screenName) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      document.querySelectorAll('.export-menu').forEach(menu => { menu.open = false; });
+      message.hidden = true;
+      const heading = document.getElementById(screenName).querySelector('[id$="title"]');
+      document.title = 'InvoXcel · ' + heading.textContent;
+      if (moveFocus) {
+        const destination = document.getElementById(target);
+        if (target === 'upload-area' || target === 'how-it-works') {
+          destination.scrollIntoView({ block: 'start' });
+          if (target === 'upload-area') destination.focus({ preventScroll: true });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          document.getElementById('main').focus({ preventScroll: true });
+        }
+      }
+    }
+
+    function selectInvoice(name) {
+      const detail = document.getElementById('detail-' + name);
+      const source = document.getElementById('source-' + name);
+      if (!detail || !source) return;
+      document.getElementById('review-detail').replaceChildren(detail.content.cloneNode(true));
+      document.getElementById('source-document').replaceChildren(source.content.cloneNode(true));
+      document.querySelectorAll('[data-invoice-row]').forEach(row => {
+        row.classList.toggle('is-selected', row.dataset.invoiceRow === name);
+      });
+      document.querySelectorAll('[data-invoice]').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.invoice === name));
+      });
+    }
+
+    function selectTab(tab) {
+      tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]').forEach(button => {
+        const active = button === tab;
+        button.setAttribute('aria-selected', String(active));
+        button.tabIndex = active ? 0 : -1;
+        document.getElementById(button.getAttribute('aria-controls')).hidden = !active;
+      });
+    }
+
+    function filterPreview(filter) {
+      document.querySelectorAll('[data-invoice-row]').forEach(row => {
+        row.hidden = filter === 'review' && !row.hasAttribute('data-needs-review');
+      });
+      document.querySelectorAll('.filter-switch button').forEach(button => {
+        const active = button.dataset.reviewFilter === filter;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+      document.querySelectorAll('[data-filter-caption]').forEach(caption => {
+        caption.hidden = caption.dataset.filterCaption !== filter;
+      });
+      selectTab(document.getElementById('summary-tab'));
+      if (filter === 'review') selectInvoice('kaveri');
+    }
+
+    document.addEventListener('click', event => {
+      const control = event.target.closest('button, a');
+      if (!control) return;
+      if (control.hasAttribute('data-show-upload') || control.hasAttribute('data-clear-upload')) {
+        const filled = control.hasAttribute('data-show-upload');
+        document.getElementById('upload-empty').hidden = filled;
+        document.getElementById('upload-filled').hidden = !filled;
+        const next = filled ? document.querySelector('[data-clear-upload]') : document.querySelector('[data-show-upload]');
+        next.focus({ preventScroll: true });
+      }
+      if (control.hasAttribute('data-toggle-password')) {
+        const input = document.getElementById('login-password');
+        const reveal = input.type === 'password';
+        input.type = reveal ? 'text' : 'password';
+        control.setAttribute('aria-pressed', String(reveal));
+        control.setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+      }
+      if (control.hasAttribute('data-mode')) {
+        document.querySelectorAll('[data-mode]').forEach(button => {
+          const active = button === control;
+          button.classList.toggle('is-active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        document.querySelectorAll('[data-mode-description]').forEach(description => {
+          description.hidden = description.dataset.modeDescription !== control.dataset.mode;
+        });
+      }
+      if (control.hasAttribute('data-check-group')) {
+        control.closest('fieldset').querySelectorAll('input[type="checkbox"]').forEach(input => {
+          input.checked = control.dataset.checkGroup === 'all';
+        });
+      }
+      if (control.hasAttribute('data-add-column') || control.hasAttribute('data-remove-column')) {
+        const add = control.hasAttribute('data-add-column');
+        const added = document.querySelector('.custom-column-added');
+        const editor = document.querySelector('.custom-column');
+        added.hidden = !add;
+        editor.open = !add;
+        editor.hidden = add;
+        if (add) added.querySelector('[data-remove-column]').focus();
+        else editor.querySelector('summary').focus();
+      }
+      if (control.hasAttribute('data-open-processing')) processingDialog.showModal();
+      if (control.hasAttribute('data-close-dialog')) processingDialog.close();
+      if (control.hasAttribute('data-enlarge-source')) {
+        const source = document.getElementById('source-document');
+        document.getElementById('enlarged-source').replaceChildren(...[...source.childNodes].map(node => node.cloneNode(true)));
+        sourceDialog.showModal();
+      }
+      if (control.hasAttribute('data-close-source')) sourceDialog.close();
+      if (control.hasAttribute('data-invoice')) selectInvoice(control.dataset.invoice);
+      if (control.getAttribute('role') === 'tab') selectTab(control);
+      if (control.hasAttribute('data-review-filter')) filterPreview(control.dataset.reviewFilter);
+      if (control.hasAttribute('data-toggle-source')) {
+        sourcePane.hidden = !sourcePane.hidden;
+        document.querySelector('.review-layout').classList.toggle('source-hidden', sourcePane.hidden);
+        control.setAttribute('aria-expanded', String(!sourcePane.hidden));
+        control.setAttribute('aria-label', sourcePane.hidden ? 'Show source invoice' : 'Hide source invoice');
+      }
+      if (control.hasAttribute('data-edit-value')) {
+        const editor = document.querySelector('.edit-value');
+        editor.hidden = false;
+        editor.querySelector('input').focus();
+      }
+      if (control.hasAttribute('data-close-edit')) {
+        const editor = control.closest('.edit-value');
+        editor.querySelector('input').value = editor.querySelector('input').defaultValue;
+        editor.hidden = true;
+        document.querySelector('[data-edit-value]').focus();
+      }
+      if (control.hasAttribute('data-message')) {
+        message.querySelector('span').textContent = control.dataset.message;
+        message.hidden = false;
+        const exportMenu = control.closest('.export-menu');
+        if (exportMenu) {
+          exportMenu.open = false;
+          exportMenu.querySelector('summary').focus();
+        }
+      }
+      if (control.hasAttribute('data-dismiss-message')) {
+        message.hidden = true;
+        document.querySelector('.export-menu summary').focus();
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      const tab = event.target.closest('[role="tab"]');
+      if (tab && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+        event.preventDefault();
+        const tabs = [...tab.parentElement.querySelectorAll('[role="tab"]')];
+        let index = tabs.indexOf(tab);
+        if (event.key === 'Home') index = 0;
+        else if (event.key === 'End') index = tabs.length - 1;
+        else index = (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        selectTab(tabs[index]);
+        tabs[index].focus();
+      }
+      if (event.key === 'Escape') {
+        message.hidden = true;
+        document.querySelectorAll('.export-menu[open]').forEach(menu => {
+          menu.open = false;
+          menu.querySelector('summary').focus();
+        });
+      }
+    });
+
+    document.querySelector('.skip-link').addEventListener('click', event => {
+      event.preventDefault();
+      document.getElementById('main').focus();
+      document.getElementById('main').scrollIntoView({ block: 'start' });
+    });
+    // Dropping a real file never uploads or reads it in this visual prototype.
+    document.addEventListener('dragover', event => event.preventDefault());
+    document.addEventListener('drop', event => event.preventDefault());
+    window.addEventListener('hashchange', () => showScreen(true));
+    selectInvoice('malabar');
+    showScreen();
+  })();
+</script>
