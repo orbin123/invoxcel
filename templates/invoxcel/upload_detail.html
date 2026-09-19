@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Review an invoice uploaded to InvoXcel.">
+  <title>{{ document.original_filename }} · InvoXcel</title>
+  {% include "invoxcel/partials/favicon.html" %}
+  {% include "invoxcel/partials/styles.html" %}
+  <style>
+    .receipt-page { min-height: calc(100vh - 88px); background: var(--color-canvas); padding: 42px 0 64px; }
+    .receipt-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding-bottom: 25px; }
+    .receipt-heading h1 { margin-top: 13px; font-size: clamp(30px, 4vw, 44px); overflow-wrap: anywhere; }
+    .receipt-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); border: 1px solid var(--color-line); background: var(--color-surface); min-height: 680px; }
+    .document-register { padding: 25px; border-right: 1px solid var(--color-line); }
+    .document-register .status { margin-bottom: 25px; }
+    .document-register dl { margin: 0; }
+    .document-register div { padding: 15px 0; border-top: 1px solid var(--color-line); }
+    .document-register dt { color: var(--color-secondary); font-size: 12px; }
+    .document-register dd { margin: 5px 0 0; font-size: 13px; overflow-wrap: anywhere; }
+    .document-register .button { margin-top: 24px; }
+    .document-preview { min-width: 0; padding: 24px; background: color-mix(in srgb, var(--color-canvas) 72%, var(--color-surface)); }
+    .document-preview object, .document-preview img { display: block; width: 100%; height: 630px; border: 1px solid var(--color-line); background: var(--color-surface); object-fit: contain; }
+    .document-preview object p { padding: 24px; }
+    @media (max-width: 680px) {
+      .receipt-page { min-height: calc(100vh - 72px); padding-top: 28px; }
+      .receipt-heading { align-items: flex-start; flex-direction: column; }
+      .receipt-layout { grid-template-columns: 1fr; }
+      .document-register { border-right: 0; border-bottom: 1px solid var(--color-line); }
+      .document-preview { padding: 12px; }
+      .document-preview object, .document-preview img { height: 70vh; min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6"/></symbol>
+  </svg>
+  <header class="site-header">
+    <a class="brand" href="{% url 'uploads:upload' %}" aria-label="InvoXcel home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M6 4h20l6 6v22H6z" fill="currentColor"/><path d="M26 4v6h6M12 12l10 14m0-14L12 26M26 15h3m-3 5h3m-3 5h3" fill="none" stroke="white" stroke-width="2"/></svg></span>
+      <span>InvoXcel</span>
+    </a>
+    <nav class="public-nav" aria-label="Main navigation">
+      <a href="{% url 'uploads:upload' %}">Overview</a>
+      <a href="{% url 'uploads:upload' %}#workspace">Sample workspace</a>
+      <a href="{% url 'templates:list' %}">Templates</a>
+    </nav>
+    {% include "invoxcel/partials/auth_header.html" %}
+  </header>
+  <main class="receipt-page" id="main" tabindex="-1">
+    <div class="page-width">
+      <div class="receipt-heading">
+        <div><span class="status"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Upload complete</span><h1>{{ document.original_filename }}</h1></div>
+      </div>
+      <section class="receipt-layout" aria-label="Uploaded invoice">
+        <aside class="document-register" aria-label="File details">
+          <span class="status status-neutral"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>{{ document.get_status_display }}</span>
+          <dl>
+            <div><dt>Original name</dt><dd>{{ document.original_filename }}</dd></div>
+            <div><dt>File type</dt><dd>{{ document.content_type }}</dd></div>
+            <div><dt>File size</dt><dd>{{ document.size_bytes|filesizeformat }}</dd></div>
+            <div><dt>Template</dt><dd>{{ document.template|default:"Not selected" }}</dd></div>
+            <div><dt>Uploaded</dt><dd>{{ document.created_at|date:"j M Y, H:i" }} UTC</dd></div>
+          </dl>
+          <a class="button button-outline button-full" href="{% url 'uploads:source' document.pk %}" target="_blank" rel="noopener">Open original</a>
+        </aside>
+        <div class="document-preview">
+          {% if document.content_type == "application/pdf" %}
+            <object data="{% url 'uploads:source' document.pk %}" type="application/pdf" aria-label="Preview of {{ document.original_filename }}">
+              <p>PDF preview is unavailable. <a class="text-link" href="{% url 'uploads:source' document.pk %}">Open the original PDF</a>.</p>
+            </object>
+          {% else %}
+            <img src="{% url 'uploads:source' document.pk %}" alt="Preview of {{ document.original_filename }}">
+          {% endif %}
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

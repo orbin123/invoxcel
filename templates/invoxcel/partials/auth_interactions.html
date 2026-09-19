@@ -1,0 +1,22 @@
+<script>
+  (() => {
+    document.querySelectorAll("[data-dismiss-message]").forEach((button) => {
+      button.addEventListener("click", () => {
+        button.closest("[data-dismissible-message]")?.remove();
+      });
+    });
+
+    document.querySelectorAll("[data-toggle-password]").forEach((button) => {
+      const field = button.closest(".password-field")?.querySelector("input");
+      if (!field) {
+        return;
+      }
+      button.addEventListener("click", () => {
+        const show = field.type === "password";
+        field.type = show ? "text" : "password";
+        button.setAttribute("aria-pressed", String(show));
+        button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      });
+    });
+  })();
+</script>

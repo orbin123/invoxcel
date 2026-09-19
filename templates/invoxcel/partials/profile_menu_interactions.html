@@ -1,0 +1,34 @@
+<script>
+  (() => {
+    document.querySelectorAll("[data-profile-menu]").forEach((menu) => {
+      const trigger = menu.querySelector("[data-profile-menu-trigger]");
+      const panel = menu.querySelector("[data-profile-menu-panel]");
+      if (!trigger || !panel) {
+        return;
+      }
+
+      const closeMenu = () => {
+        panel.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+      };
+
+      trigger.addEventListener("click", () => {
+        const open = panel.hidden;
+        panel.hidden = !open;
+        trigger.setAttribute("aria-expanded", String(open));
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!menu.contains(event.target)) {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeMenu();
+        }
+      });
+    });
+  })();
+</script>

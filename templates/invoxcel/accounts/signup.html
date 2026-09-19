@@ -1,0 +1,89 @@
+{% extends "invoxcel/accounts/base.html" %}
+
+{% block content %}
+<section class="screen login-screen" aria-labelledby="signup-title">
+  <div class="login-layout page-width">
+    <div class="login-aside">
+      <a class="text-link" href="{% url 'uploads:upload' %}">
+        <svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>
+        Back to overview
+      </a>
+      <h1>Start with<br>your structure.</h1>
+      <p>Create an account to save templates, review batches,<br>and export with confidence.</p>
+      <div class="login-sheet" aria-hidden="true">
+        <div class="login-sheet-title">
+          <svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>
+          Your workspace
+          <span class="status">Ready</span>
+        </div>
+        <div class="login-sheet-row"><span>Invoice summaries</span><strong>One sheet</strong><svg class="icon green" aria-hidden="true"><use href="#i-check"/></svg></div>
+        <div class="login-sheet-row"><span>Line items</span><strong>Separate view</strong><svg class="icon green" aria-hidden="true"><use href="#i-check"/></svg></div>
+        <div class="login-sheet-row"><span>Exports</span><strong>XLSX · CSV · JSON</strong><svg class="icon green" aria-hidden="true"><use href="#i-check"/></svg></div>
+        <div class="login-sheet-footer">Your data, reviewed before export.</div>
+      </div>
+    </div>
+    <div class="login-content">
+      <span class="login-symbol"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></span>
+      <h2 id="signup-title">Create your account</h2>
+      <p>Sign up to keep your invoice work in one place.</p>
+
+      <form class="login-fields" method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="auth-errors" role="alert">
+            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+
+        <label class="field-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <div class="auth-errors" role="alert">
+            {% for error in form.email.errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+
+        <label class="field-label" for="{{ form.password1.id_for_label }}">Password</label>
+        <div class="password-field">
+          {{ form.password1 }}
+          <button type="button" class="icon-button" data-toggle-password aria-label="Show password" aria-pressed="false">
+            <svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>
+          </button>
+        </div>
+        {% if form.password1.errors %}
+          <div class="auth-errors" role="alert">
+            {% for error in form.password1.errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+
+        <label class="field-label" for="{{ form.password2.id_for_label }}">Confirm password</label>
+        <div class="password-field">
+          {{ form.password2 }}
+          <button type="button" class="icon-button" data-toggle-password aria-label="Show password" aria-pressed="false">
+            <svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>
+          </button>
+        </div>
+        {% if form.password2.errors %}
+          <div class="auth-errors" role="alert">
+            {% for error in form.password2.errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+
+        <button class="button button-primary button-full" type="submit">
+          Create account
+          <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+        </button>
+      </form>
+
+      <div class="login-divider"><span>Or continue with</span></div>
+      <a href="{% url 'accounts:google_start' %}?next=/" class="button button-outline button-full button-google">
+        <svg class="icon google-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#EA4335" d="M12 10.2v3.6h5.1c-.2 1.2-1.5 3.6-5.1 3.6-3.1 0-5.6-2.6-5.6-5.8S8.9 6 12 6c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.8 3.9 14.6 3 12 3 7 3 3 7 3 12s4 9 9 9c5.2 0 8.6-3.7 8.6-8.9 0-.6-.1-1.1-.2-1.6H12z"/>
+        </svg>
+        Continue with Google
+      </a>
+      <p class="login-hint">Already have an account? <a class="text-link" href="{% url 'accounts:signin' %}">Sign in</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

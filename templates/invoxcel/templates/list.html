@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create and manage invoice output templates in InvoXcel.">
+  <title>Templates · InvoXcel</title>
+  {% include "invoxcel/partials/favicon.html" %}
+  {% include "invoxcel/partials/styles.html" %}
+  {% include "invoxcel/templates/styles.html" %}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  </svg>
+  <header class="site-header">
+    <a class="brand" href="{% url 'uploads:upload' %}" aria-label="InvoXcel home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M6 4h20l6 6v22H6z" fill="currentColor"/><path d="M26 4v6h6M12 12l10 14m0-14L12 26M26 15h3m-3 5h3m-3 5h3" fill="none" stroke="white" stroke-width="2"/></svg></span>
+      <span>InvoXcel</span>
+    </a>
+    <nav class="public-nav" aria-label="Main navigation">
+      <a href="{% url 'uploads:upload' %}">Overview</a>
+      <a href="{% url 'uploads:upload' %}#batches">My batches</a>
+      <a href="{% url 'templates:list' %}" aria-current="page">Templates</a>
+    </nav>
+    {% include "invoxcel/partials/auth_header.html" %}
+  </header>
+  <main class="templates-page" id="main" tabindex="-1">
+    <div class="page-width">
+      <div class="templates-heading">
+        <div>
+          <h1>Templates</h1>
+          <p>Define the columns you need, independent of how any supplier lays out an invoice.</p>
+        </div>
+        <a class="button button-primary" href="{% url 'templates:create' %}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Create template</a>
+      </div>
+      <section class="template-register" aria-label="Available templates">
+        {% for template in templates %}
+          <article class="template-row">
+            <div>
+              <div class="template-title">
+                <h2>{{ template.name }}</h2>
+                {% if template.is_standard %}<span class="status">Built in</span>{% endif %}
+              </div>
+              <p class="template-count">{{ template.columns.count }} columns</p>
+            </div>
+            <div class="template-columns" aria-label="Columns in {{ template.name }}">
+              {% for column in template.columns.all %}
+                <span class="column-chip{% if column.dataset == 'line_item' %} is-line-item{% endif %}">{{ column.label }}</span>
+              {% endfor %}
+            </div>
+            <div class="template-actions">
+              {% if template.is_standard %}
+                <span class="template-standard-note">Always available</span>
+              {% else %}
+                <a class="text-link" href="{% url 'templates:edit' template.pk %}">Edit</a>
+                <a class="text-link attention" href="{% url 'templates:delete' template.pk %}">Delete</a>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    </div>
+  </main>
+  <script>
+    document.querySelector(".skip-link").addEventListener("click", event => {
+      event.preventDefault();
+      document.getElementById("main").focus();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<div class="header-auth">
+  {% if user.is_authenticated %}
+    <span class="header-user-email">{{ user.email|default:user.username }}</span>
+    <div class="profile-menu" data-profile-menu>
+      <button
+        type="button"
+        class="profile-menu-trigger icon-button"
+        aria-label="Account menu"
+        aria-expanded="false"
+        aria-haspopup="true"
+        data-profile-menu-trigger
+      >
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M5 20a7 7 0 0 1 14 0"/>
+        </svg>
+      </button>
+      <div class="profile-menu-panel" hidden data-profile-menu-panel>
+        <p class="profile-menu-email">{{ user.email|default:user.username }}</p>
+        <form method="post" action="{% url 'accounts:signout' %}">
+          {% csrf_token %}
+          <button type="submit" class="profile-menu-signout">Sign out</button>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <a class="button button-small button-outline header-login" href="{% url 'accounts:signin' %}">Sign in</a>
+    <a class="button button-small button-primary header-login" href="{% url 'accounts:signup' %}">Sign up</a>
+  {% endif %}
+</div>
+{% if user.is_authenticated %}
+  {% include "invoxcel/partials/profile_menu_interactions.html" %}
+{% endif %}

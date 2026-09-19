@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delete {{ template.name }} · InvoXcel</title>
+  {% include "invoxcel/partials/favicon.html" %}
+  {% include "invoxcel/partials/styles.html" %}
+  {% include "invoxcel/templates/styles.html" %}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="{% url 'uploads:upload' %}" aria-label="InvoXcel home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M6 4h20l6 6v22H6z" fill="currentColor"/><path d="M26 4v6h6M12 12l10 14m0-14L12 26M26 15h3m-3 5h3m-3 5h3" fill="none" stroke="white" stroke-width="2"/></svg></span>
+      <span>InvoXcel</span>
+    </a>
+    <nav class="public-nav" aria-label="Main navigation">
+      <a href="{% url 'uploads:upload' %}">Overview</a>
+      <a href="{% url 'uploads:upload' %}#batches">My batches</a>
+      <a href="{% url 'templates:list' %}" aria-current="page">Templates</a>
+    </nav>
+    {% include "invoxcel/partials/auth_header.html" %}
+  </header>
+  <main class="templates-page" id="main" tabindex="-1">
+    <div class="page-width">
+      <section class="delete-sheet" aria-labelledby="delete-title">
+        <h1 id="delete-title">Delete template?</h1>
+        {% if is_in_use %}
+          <p><strong>{{ template.name }}</strong> is used by existing uploads, so it cannot be deleted.</p>
+          <div class="delete-actions"><a class="button button-outline" href="{% url 'templates:list' %}">Back to templates</a></div>
+        {% else %}
+          <p><strong>{{ template.name }}</strong> will no longer be available for new uploads.</p>
+          <form method="post" class="delete-actions">
+            {% csrf_token %}
+            <a class="button button-outline" href="{% url 'templates:list' %}">Cancel</a>
+            <button class="button button-danger" type="submit">Delete template</button>
+          </form>
+        {% endif %}
+      </section>
+    </div>
+  </main>
+</body>
+</html>

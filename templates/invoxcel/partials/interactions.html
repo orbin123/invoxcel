@@ -1,0 +1,58 @@
+<script>
+  (() => {
+    const input = document.getElementById('id_document');
+    const form = document.getElementById('upload-area');
+    const dropZone = document.querySelector('.drop-zone');
+    let files = [];
+    function renderFiles() {
+      const transfer = new DataTransfer();
+      files.forEach(file => transfer.items.add(file));
+      input.files = transfer.files;
+      const list = document.querySelector('[data-uploaded-files]');
+      list.replaceChildren(...files.map(file => {
+        const item = document.createElement('li');
+        const name = document.createElement('strong');
+        name.textContent = file.name;
+        const size = document.createElement('span');
+        size.textContent = `${Math.ceil(file.size / 1024)} KB`;
+        item.append(name, size);
+        return item;
+      }));
+      document.querySelector('[data-upload-count]').textContent = `${files.length} file${files.length === 1 ? '' : 's'} ready`;
+      document.querySelector('[data-upload-total]').textContent = `${(files.reduce((total, file) => total + file.size, 0) / 1024 / 1024).toFixed(1)} MB selected · {{ upload_form.max_upload_mb }} MB per file`;
+      document.getElementById('upload-empty').hidden = files.length > 0;
+      document.getElementById('upload-filled').hidden = !files.length;
+    }
+    document.querySelectorAll('[data-trigger-file]').forEach(button => button.addEventListener('click', () => input.click()));
+    document.querySelector('[data-clear-upload]').addEventListener('click', () => { files = []; renderFiles(); });
+    input.addEventListener('change', () => { files.push(...input.files); renderFiles(); });
+    ['dragenter', 'dragover'].forEach(name => dropZone.addEventListener(name, event => { event.preventDefault(); dropZone.classList.add('is-dragging'); }));
+    ['dragleave', 'drop'].forEach(name => dropZone.addEventListener(name, event => { event.preventDefault(); dropZone.classList.remove('is-dragging'); }));
+    dropZone.addEventListener('drop', event => { files.push(...event.dataTransfer.files); renderFiles(); });
+    form.addEventListener('submit', () => {
+      const button = form.querySelector('[type="submit"]');
+      button.disabled = true;
+      button.textContent = 'Extracting with Azure…';
+      document.querySelector('[data-upload-total]').textContent = 'Keep this page open. Each file can take up to {{ upload_form.timeout }} seconds.';
+    });
+
+    document.querySelectorAll('[data-confirm-form]').forEach(confirmForm => confirmForm.addEventListener('submit', event => {
+      if (!window.confirm(confirmForm.dataset.confirmForm)) event.preventDefault();
+    }));
+
+    const batchList = document.querySelector('[data-batch-list]');
+    const batchToggle = document.querySelector('[data-batch-list-toggle]');
+    if (batchList && batchToggle) {
+      const extraBatches = batchList.querySelectorAll('[data-batch-extra]');
+      if (extraBatches.length) {
+        batchToggle.hidden = false;
+        batchToggle.addEventListener('click', () => {
+          const expanded = batchToggle.getAttribute('aria-expanded') === 'true';
+          extraBatches.forEach(row => { row.hidden = expanded; });
+          batchToggle.textContent = expanded ? 'View more' : 'Show less';
+          batchToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        });
+      }
+    }
+  })();
+</script>

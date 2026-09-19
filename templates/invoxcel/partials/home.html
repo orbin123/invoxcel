@@ -1,0 +1,99 @@
+<section class="screen home-screen" id="home" data-screen="home" aria-labelledby="home-title">
+  <div class="home-hero page-width">
+    <div class="hero-copy">
+      <h1 id="home-title">Invoices, ready for your spreadsheet.</h1>
+      {% if user.is_authenticated %}
+        <p class="hero-description">Upload invoices, review the extracted data, and export when you are ready.</p>
+      {% else %}
+        <p class="hero-description">Bring the invoices. InvoXcel extracts the data.<br class="desktop-break"> Review every detail before it reaches Excel.</p>
+      {% endif %}
+      <div class="hero-actions">
+        {% if user.is_authenticated %}
+          <a class="button button-primary" href="#upload-area">Start with your invoices <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg></a>
+        {% else %}
+          <a class="button button-primary" href="#upload-area" data-require-auth data-auth-message="Sign in to upload and extract invoices.">Start with your invoices <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg></a>
+        {% endif %}
+        <a class="text-link" href="#how-it-works">See the workflow <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+      </div>
+      <div class="hero-note"><span class="mini-grid" aria-hidden="true"></span><p>Your structure. Every vendor.<br><span>One consistent spreadsheet.</span></p></div>
+    </div>
+    <form class="upload-workbench" id="upload-area" method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <div class="panel-heading"><h2>Upload invoices</h2></div>
+      {% if upload_form.document.errors %}
+        <div class="upload-errors" role="alert">
+          {% for error in upload_form.document.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+      {% if upload_form.template.errors %}
+        <div class="upload-errors" role="alert">
+          {% for error in upload_form.template.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+      <div class="template-picker">
+        <label for="{{ upload_form.template.id_for_label }}">Output template</label>
+        <div class="select-field">
+          {{ upload_form.template }}
+          <svg class="icon select-chevron" aria-hidden="true"><use href="#i-down"/></svg>
+        </div>
+        {% if user.is_authenticated %}
+          <a class="text-link" href="{% url 'templates:create' %}">Create a template</a>
+        {% else %}
+          <a class="text-link" href="{% url 'templates:create' %}" data-require-auth data-auth-message="Sign in to manage templates.">Create a template</a>
+        {% endif %}
+      </div>
+      <p class="small" style="padding: 0 20px 12px">Choose None to detect columns automatically.</p>
+      <p class="small" style="padding: 0 20px 12px">Azure S0 · {{ upload_form.max_upload_mb }} MB per file · {{ upload_form.max_pages }} pages per PDF/TIFF. One invoice per file.</p>
+      <div id="upload-empty"{% if upload_form.document.errors %} class="has-error"{% endif %}>
+        <div class="drop-zone">
+          <span class="upload-illustration" aria-hidden="true"><span class="back-sheet"></span><svg viewBox="0 0 70 82"><path d="M12 2h32l14 14v62H12z"/><path d="M44 2v15h14M23 30h24M23 38h24M23 46h15"/><rect x="31" y="51" width="32" height="29" rx="5"/><path d="M47 72V59m-5 5 5-5 5 5"/></svg></span>
+          <strong>Drop invoices here</strong>
+          <span>PDF, JPG, PNG, BMP or TIFF · Up to 10 files</span>
+          {{ upload_form.document }}
+          <button class="button button-outline choose-files" type="button" data-trigger-file{% if not user.is_authenticated %} data-require-auth data-auth-message="Sign in to upload and extract invoices."{% endif %}>Choose files</button>
+        </div>
+      </div>
+      <div id="upload-filled" hidden>
+        <div class="upload-ready"><span class="status"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-upload-count>0 files ready</span></span><button type="button" class="text-link" data-clear-upload>Clear all</button></div>
+        <ul class="uploaded-files" data-uploaded-files></ul>
+        <p class="upload-total" data-upload-total></p>
+        <button class="button button-outline button-full" type="button" data-trigger-file{% if not user.is_authenticated %} data-require-auth data-auth-message="Sign in to upload and extract invoices."{% endif %}>Add more files</button>
+        <button class="button button-primary button-full" type="submit"{% if not user.is_authenticated %} data-require-auth data-auth-message="Sign in to upload and extract invoices."{% endif %}>Extract invoices <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg></button>
+      </div>
+    </form>
+  </div>
+  <div class="format-strip page-width"><p>For the people behind the numbers.</p><div><span>Accountants</span><span>Bookkeepers</span><span>Finance teams</span></div></div>
+  <section class="review-story" aria-labelledby="story-title">
+    <div class="page-width story-grid">
+      <div class="story-copy"><h2 id="story-title">The source on one side.<br>The details on the other.</h2><p>A total deserves a second look. Keep the original invoice beside your data, check what matters, and leave with a spreadsheet you understand.</p><a class="text-link" href="#how-it-works">See the workflow <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></a><div class="dataset-note"><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg><span>Invoice summaries and line items.<br>Two clear views, one workbook.</span></div></div>
+      <!-- MOCK DATA: replaced by backend data in a future iteration -->
+      <div class="comparison-sample" aria-label="Sample invoice and its extracted total">
+        <div class="mini-document"><div class="mini-document-brand"><span class="vendor-logo">m.</span><strong>Malabar<br>Office Supply</strong></div><div class="mini-invoice-meta"><span>Invoice</span><strong>MOS-260914</strong></div><div class="mini-line"><span>Office supplies</span><span>₹21,000.00</span></div><div class="mini-line"><span>Tax</span><span>₹3,780.00</span></div><div class="mini-total"><span>Total</span><strong>₹24,780.00</strong><span class="source-node"></span></div><div class="mini-document-foot">Thank you for your business.</div></div>
+        <div class="connection" aria-hidden="true"><span></span><svg class="icon"><use href="#i-check"/></svg><span></span></div>
+        <div class="mini-extract"><div class="mini-extract-header"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg><span>Invoice summary</span></div><div class="mini-line"><span>Vendor</span><strong>Malabar Office Supply</strong></div><div class="mini-line"><span>Invoice date</span><strong>14 Sep 2026</strong></div><div class="mini-selected"><span>Total amount</span><strong>₹24,780.00</strong></div><div class="matched-label"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Matches the source</div></div>
+      </div>
+    </div>
+  </section>
+  <section class="how-section page-width" id="how-it-works" aria-labelledby="how-title">
+    <div class="section-heading"><h2 id="how-title">A clear path from file to figures.</h2><p>You choose what goes into your spreadsheet.</p></div>
+    <ol class="workflow-explainer"><li><span class="step-number">1</span><div><h3>Bring your invoices</h3><p>Start with PDFs, scans, or photos from different vendors.</p></div></li><li><span class="step-number">2</span><div><h3>Extract with Azure</h3><p>Invoice details become editable summary and line-item rows.</p></div></li><li><span class="step-number">3</span><div><h3>Review, then export</h3><p>Check the source and prepare XLSX, CSV, or JSON.</p></div></li></ol>
+  </section>
+  <section class="how-section page-width" id="batches" aria-labelledby="batches-title">
+    <h2 id="batches-title">My batches</h2>
+    <div class="batch-list" data-batch-list>
+      {% for batch in batches %}
+        <div class="batch-row"{% if forloop.counter > 5 %} data-batch-extra hidden{% endif %}>
+          <a class="text-link" href="{% url 'workspace:detail' batch.pk %}">{{ batch.display_name }} · {{ batch.template.name|default:"Auto-detected columns" }}</a>
+          <div class="batch-row-meta">
+            <span>{{ batch.created_at|date:"d M Y, H:i" }}</span>
+            <form class="batch-delete-form" method="post" action="{% url 'processing:delete_batch' batch.pk %}" data-confirm-form="Delete {{ batch.display_name }} and all its uploaded source files? This cannot be undone.">{% csrf_token %}<button class="text-link attention" type="submit">Delete</button></form>
+          </div>
+        </div>
+      {% empty %}
+        <p class="batch-list-empty">Upload your first invoice to start a review workspace.</p>
+      {% endfor %}
+    </div>
+    <button type="button" class="text-link batch-list-toggle" data-batch-list-toggle aria-expanded="false" hidden>View more</button>
+  </section>
+  <footer class="site-footer page-width"><a class="footer-wordmark" href="#home">InvoXcel</a><p>A little less entry. A lot more clarity.</p></footer>
+</section>

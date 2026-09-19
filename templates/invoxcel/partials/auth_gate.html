@@ -1,0 +1,62 @@
+<script>
+  (() => {
+    const signInUrl = "{% url 'accounts:signin' %}";
+    const signUpUrl = "{% url 'accounts:signup' %}";
+    let hideTimer;
+
+    function showAuthToast(message) {
+      let toast = document.getElementById("auth-toast");
+      if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "auth-toast";
+        toast.className = "auth-toast";
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        document.body.appendChild(toast);
+      }
+
+      toast.innerHTML = `
+        <p>${message}</p>
+        <p class="auth-toast-actions">
+          <a class="text-link" href="${signInUrl}">Sign in</a>
+          <span aria-hidden="true">·</span>
+          <a class="text-link" href="${signUpUrl}">Sign up</a>
+        </p>
+      `;
+      toast.classList.add("is-visible");
+      window.clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 4500);
+    }
+
+    function blockAuthAction(event, message) {
+      event.preventDefault();
+      event.stopPropagation();
+      showAuthToast(message);
+      return false;
+    }
+
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-require-auth]");
+      if (!target) {
+        return;
+      }
+      blockAuthAction(event, target.dataset.authMessage || "Sign in to continue.");
+    }, true);
+
+    const uploadForm = document.getElementById("upload-area");
+    if (uploadForm) {
+      uploadForm.addEventListener("submit", (event) => {
+        blockAuthAction(event, "Sign in to upload and extract invoices.");
+      });
+      ["dragenter", "dragover", "drop"].forEach((name) => {
+        uploadForm.addEventListener(name, (event) => {
+          if (name === "drop") {
+            blockAuthAction(event, "Sign in to upload and extract invoices.");
+            return;
+          }
+          event.preventDefault();
+        });
+      });
+    }
+  })();
+</script>
