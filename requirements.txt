@@ -1,1 +1,10 @@
 Django>=5.2,<5.3
+djangorestframework>=3.16,<3.17
+djangorestframework-simplejwt>=5.5,<6
+python-dotenv>=1.0,<2
+requests==2.34.2
+pypdf==6.18.1
+openpyxl==3.1.5
+pycountry==24.6.1
+pypdfium2==5.13.0
+pillow==12.3.0
