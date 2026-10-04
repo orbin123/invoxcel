@@ -59,7 +59,6 @@ class InvoiceUploadForm(forms.Form):
             if user and user.is_authenticated
             else Template.objects.filter(is_standard=True).order_by("name")
         )
-        self.fields["template"].initial = queryset.filter(is_standard=True).first()
         self.fields["template"].queryset = queryset
 
     def clean_document(self):

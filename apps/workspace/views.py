@@ -102,7 +102,10 @@ def detail(request, pk):
         record = getattr(analysis, "invoice", None)
         analysis.has_invoice = bool(record)
         analysis.review_label = "Reviewed" if record and record.reviewed_at else "Needs review" if record else analysis.get_status_display()
-        analysis.summary_cells = [record.values.get(column.key) for column in summary_columns] if record else []
+        analysis.summary_cells = [
+            {"value": record.values.get(column.key), "numeric": column.data_type in ("number", "currency")}
+            for column in summary_columns
+        ] if record else []
     return render(request, "invoxcel/workspace.html", {
         "source_pages": range(1, (selected.page_count if selected else 1) + 1),
         "batch": batch, "analyses": analyses, "selected": selected, "invoice": invoice,
@@ -111,6 +114,14 @@ def detail(request, pk):
         "azure_findings": azure_findings, "programmatic_findings": programmatic_findings,
         "form": form, "formset": formset, "summary_columns": summary_columns,
         "item_columns": item_columns, "columns": columns,
+        "item_output_rows": [
+            {"document_id": a.document_id, "cells": [
+                {"value": item.values.get(c.key), "numeric": c.data_type in ("number", "currency")}
+                for c in item_columns
+            ]}
+            for a in analyses if getattr(a, "invoice", None)
+            for item in a.invoice.line_items.all()
+        ],
         "export_ready": bool(analyses) and any(getattr(a, "invoice", None) for a in analyses) and all(a.invoice.reviewed_at for a in analyses if getattr(a, "invoice", None)),
         "failed_count": sum(a.status == DocumentAnalysis.Status.FAILED for a in analyses),
     })

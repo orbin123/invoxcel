@@ -7,6 +7,47 @@ from apps.uploads.models import UploadedDocument
 
 
 class TemplateTests(AuthenticatedTestCase):
+    def test_invalid_template_keeps_selections_and_custom_text(self):
+        response = self.client.post(
+            reverse("templates:create"),
+            {
+                "name": "Invalid fixture",
+                "summary_columns": ["invoice_number"],
+                "line_item_columns": ["description"],
+                "custom_summary_columns": "Project code\nProject code",
+                "custom_line_item_columns": "Cost centre",
+            },
+        )
+
+        self.assertContains(response, "Each custom column name must be unique.")
+        self.assertFalse(Template.objects.filter(name="Invalid fixture").exists())
+        form = response.context["form"]
+        self.assertEqual(form["summary_columns"].value(), ["invoice_number"])
+        self.assertEqual(form["line_item_columns"].value(), ["description"])
+        self.assertContains(response, "Project code\nProject code")
+        self.assertContains(response, "Cost centre")
+
+    def test_invalid_edit_leaves_saved_columns_intact(self):
+        template = Template.objects.create(name="Saved fixture", user=self.user)
+        column = TemplateColumn.objects.create(
+            template=template,
+            dataset=TemplateColumn.Dataset.SUMMARY,
+            key="invoice_number",
+            label="Invoice number",
+            data_type=TemplateColumn.DataType.TEXT,
+            position=0,
+        )
+
+        response = self.client.post(
+            reverse("templates:edit", args=[template.pk]),
+            {"name": "Unsaved fixture"},
+        )
+
+        self.assertContains(response, "Choose at least one summary or line item column.")
+        template.refresh_from_db()
+        self.assertEqual(template.name, "Saved fixture")
+        self.assertEqual(list(template.columns.all()), [column])
+
     def test_standard_invoice_template_is_seeded_and_visible(self):
         template = Template.objects.get(name="Standard Invoice")
 

@@ -1,0 +1,44 @@
+<script>
+  (() => {
+    const trigger = document.querySelector('.navigation-toggle');
+    const navigation = document.getElementById('main-navigation');
+    if (!trigger || !navigation) return;
+    const header = trigger.closest('.site-header');
+    const compact = window.matchMedia('(max-width: 1000px)');
+    header.classList.add('navigation-enhanced');
+    const close = () => {
+      trigger.setAttribute('aria-expanded', 'false');
+      trigger.setAttribute('aria-label', 'Open navigation');
+      navigation.classList.remove('is-open');
+    };
+    trigger.addEventListener('click', () => {
+      const open = trigger.getAttribute('aria-expanded') !== 'true';
+      trigger.setAttribute('aria-expanded', String(open));
+      trigger.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+      navigation.classList.toggle('is-open', open);
+    });
+    navigation.addEventListener('click', event => {
+      if (event.target.closest('a') && compact.matches) {
+        close();
+        trigger.focus();
+      }
+    });
+    document.addEventListener('click', event => {
+      if (!navigation.contains(event.target) && !trigger.contains(event.target)) close();
+    });
+    document.addEventListener('focusin', event => {
+      if (!navigation.contains(event.target) && !trigger.contains(event.target)) close();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && trigger.getAttribute('aria-expanded') === 'true') {
+        close();
+        trigger.focus();
+      }
+    });
+    compact.addEventListener('change', () => {
+      if (compact.matches && navigation.contains(document.activeElement)) trigger.focus();
+      if (!compact.matches && document.activeElement === trigger) navigation.querySelector('a').focus();
+      close();
+    });
+  })();
+</script>

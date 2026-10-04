@@ -126,13 +126,32 @@ class AzureInvoiceClient:
     def __init__(self):
         self.model = settings.AZURE_DOCUMENT_INTELLIGENCE_MODEL
 
-    def extract(self, document):
+    def _configuration(self):
         endpoint = settings.AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT.rstrip("/")
         key = settings.AZURE_DOCUMENT_INTELLIGENCE_KEY
         if not endpoint or not key:
             raise ExtractionError("Configure AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT and AZURE_DOCUMENT_INTELLIGENCE_KEY in .env, then retry.")
         if urlsplit(endpoint).scheme != "https":
             raise ExtractionError("Azure endpoint must use HTTPS. Check .env, then retry.")
+        return endpoint, key
+
+    def check_connection(self):
+        """Authenticate with resource info without submitting document bytes."""
+        endpoint, key = self._configuration()
+        try:
+            with requests.Session() as session:
+                session.headers.update({"Ocp-Apim-Subscription-Key": key})
+                response = session.get(
+                    f"{endpoint}/documentintelligence/info",
+                    params={"api-version": API_VERSION}, timeout=(10, 20),
+                    allow_redirects=False,
+                )
+                self._check_status(response, 200)
+        except requests.RequestException as exc:
+            raise ExtractionError("Could not reach Azure. Check the connection and retry.") from exc
+
+    def extract(self, document):
+        endpoint, key = self._configuration()
         if document.size_bytes > settings.AZURE_DOCUMENT_INTELLIGENCE_MAX_BYTES:
             raise ExtractionError(f"This file exceeds the configured Azure size limit ({settings.AZURE_DOCUMENT_INTELLIGENCE_MAX_BYTES // (1024 * 1024)} MB). Upload a smaller file.")
         try:
@@ -166,7 +185,7 @@ class AzureInvoiceClient:
             with document.file.open("rb") as content, requests.Session() as session:
                 session.headers.update({"Ocp-Apim-Subscription-Key": key})
                 response = session.post(url, data=content, headers={"Content-Type": document.content_type}, timeout=(10, 30), allow_redirects=False)
-                self._check_status(response, 202)
+                self._check_status(response, 202, metadata)
                 operation_url = response.headers.get("Operation-Location", "")
                 parsed = urlsplit(operation_url)
                 if parsed.scheme != "https" or parsed.netloc != urlsplit(endpoint).netloc:
@@ -179,7 +198,7 @@ class AzureInvoiceClient:
                     if remaining <= 0:
                         break
                     response = session.get(operation_url, timeout=min(20, remaining), allow_redirects=False)
-                    self._check_status(response, 200)
+                    self._check_status(response, 200, metadata)
                     payload = response.json()
                     if payload.get("status") == "succeeded":
                         return map_response(response.text, metadata)
@@ -191,15 +210,30 @@ class AzureInvoiceClient:
             raise ExtractionError("Could not reach Azure or read its response. Check the connection and retry.", metadata=metadata) from exc
 
     @staticmethod
-    def _check_status(response, expected):
+    def _check_status(response, expected, metadata=None):
         if response.status_code == expected:
             return
         messages = {
-            401: "Azure credentials were rejected. Check the endpoint and key in .env.",
+            401: "Azure authentication failed. Check that the subscription is active and the endpoint and key in .env belong to the same resource. Check environment overrides, then restart Django after configuration changes before retrying.",
             403: "Azure denied access. Check the resource key and network access.",
             429: "Azure's rate or page quota was reached. Wait before retrying, or check the resource quota.",
             400: "Azure rejected the file. Check that it is a readable, unlocked invoice.",
             404: "Azure resource or invoice model was not found. Check .env.",
             413: "Azure rejected the file size. Upload a smaller file.",
         }
-        raise ExtractionError(messages.get(response.status_code, "Azure is unavailable. Your source is saved; retry later."))
+        details = dict(metadata or {})
+        details["http_status"] = response.status_code
+        # Provider data is untrusted: retain only short identifiers, never messages.
+        try:
+            payload = response.json()
+            error = payload.get("error", payload) if isinstance(payload, dict) else {}
+            code = error.get("code", error.get("statusCode")) if isinstance(error, dict) else None
+        except ValueError:
+            code = None
+        for name, value in (("error_code", code), ("request_id", response.headers.get("apim-request-id"))):
+            if isinstance(value, (str, int)):
+                value = str(value)
+                key = settings.AZURE_DOCUMENT_INTELLIGENCE_KEY
+                if re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", value) and not (key and key in value):
+                    details[name] = value
+        raise ExtractionError(messages.get(response.status_code, "Azure is unavailable. Your source is saved; retry later."), metadata=details)

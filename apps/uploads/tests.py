@@ -35,6 +35,15 @@ class InvoiceUploadTests(AuthenticatedTestCase):
         )
         self.assertIsNotNone(finders.find("invoxcel/favicon.svg"))
 
+    def test_upload_defaults_to_automatic_columns_with_templates_available(self):
+        response = self.client.get(reverse("uploads:upload"))
+        self.assertContains(response, '<option value="" selected>None — automatically detect columns</option>', html=True)
+        self.assertIsNone(response.context["upload_form"]["template"].value())
+        self.assertContains(response, self.standard_template.name)
+        self.client.logout()
+        response = self.client.get(reverse("uploads:upload"))
+        self.assertIsNone(response.context["upload_form"]["template"].value())
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()

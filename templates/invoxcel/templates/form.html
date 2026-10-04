@@ -7,16 +7,17 @@
   <title>{{ page_title }} · InvoXcel</title>
   {% include "invoxcel/partials/favicon.html" %}
   {% include "invoxcel/partials/styles.html" %}
+  {% include "invoxcel/partials/public_design.html" %}
   {% include "invoxcel/templates/styles.html" %}
 </head>
-<body>
+<body class="public-page template-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <a class="brand" href="{% url 'uploads:upload' %}" aria-label="InvoXcel home">
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M6 4h20l6 6v22H6z" fill="currentColor"/><path d="M26 4v6h6M12 12l10 14m0-14L12 26M26 15h3m-3 5h3m-3 5h3" fill="none" stroke="white" stroke-width="2"/></svg></span>
       <span>InvoXcel</span>
     </a>
-    <nav class="public-nav" aria-label="Main navigation">
+    {% include "invoxcel/partials/navigation_toggle.html" %}<nav id="main-navigation" class="public-nav" aria-label="Main navigation">
       <a href="{% url 'uploads:upload' %}">Overview</a>
       <a href="{% url 'uploads:upload' %}#batches">My batches</a>
       <a href="{% url 'templates:list' %}" aria-current="page">Templates</a>
@@ -25,45 +26,46 @@
   </header>
   <main class="templates-page" id="main" tabindex="-1">
     <div class="page-width">
+      <a class="text-link template-back" href="{% url 'templates:list' %}">← All templates</a>
       <div class="templates-heading">
         <div>
           <h1>{{ page_title }}</h1>
-          <p>Choose the structure InvoXcel should use when it processes your invoices.</p>
+          <p>Choose the columns for your review and export. Summary data and line items stay separate.</p>
         </div>
       </div>
       <div class="template-form-layout">
         <form class="template-form" method="post" novalidate>
           {% csrf_token %}
-          {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+          {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
           <label class="field-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
           {{ form.name }}
           {% if form.name.errors %}<div class="form-error">{{ form.name.errors }}</div>{% endif %}
 
-          <section class="schema-block" aria-labelledby="summary-columns">
-            <h2 id="summary-columns">Summary columns</h2>
+          <fieldset class="schema-block">
+            <legend id="summary-columns">Summary columns</legend>
             <p>One record per invoice.</p>
             <div class="column-checks">{{ form.summary_columns }}</div>
             {% if form.summary_columns.errors %}<div class="form-error">{{ form.summary_columns.errors }}</div>{% endif %}
             <div class="custom-columns">
               <label class="field-label" for="{{ form.custom_summary_columns.id_for_label }}">{{ form.custom_summary_columns.label }}</label>
               {{ form.custom_summary_columns }}
-              <p class="field-help">One name per line. Custom columns use text values in this slice.</p>
+              <p class="field-help">One name per line. Text values can be filled in during review.</p>
               {% if form.custom_summary_columns.errors %}<div class="form-error">{{ form.custom_summary_columns.errors }}</div>{% endif %}
             </div>
-          </section>
+          </fieldset>
 
-          <section class="schema-block" aria-labelledby="line-item-columns">
-            <h2 id="line-item-columns">Line item columns</h2>
+          <fieldset class="schema-block">
+            <legend id="line-item-columns">Line item columns</legend>
             <p>Many records can belong to one invoice.</p>
             <div class="column-checks">{{ form.line_item_columns }}</div>
             {% if form.line_item_columns.errors %}<div class="form-error">{{ form.line_item_columns.errors }}</div>{% endif %}
             <div class="custom-columns">
               <label class="field-label" for="{{ form.custom_line_item_columns.id_for_label }}">{{ form.custom_line_item_columns.label }}</label>
               {{ form.custom_line_item_columns }}
-              <p class="field-help">One name per line. Custom columns use text values in this slice.</p>
+              <p class="field-help">One name per line. Text values can be filled in during review.</p>
               {% if form.custom_line_item_columns.errors %}<div class="form-error">{{ form.custom_line_item_columns.errors }}</div>{% endif %}
             </div>
-          </section>
+          </fieldset>
 
           <div class="template-form-actions">
             <a class="text-link" href="{% url 'templates:list' %}">Cancel</a>
@@ -71,7 +73,8 @@
           </div>
         </form>
         <aside class="template-form-aside">
-          <h2>Structure, not layout</h2>
+          <h2>Your output structure</h2>
+          <dl class="dataset-guide"><div><dt>Invoice summary</dt><dd>One row per invoice</dd></div><div><dt>Line items</dt><dd>One row per item</dd></div></dl>
           <p>A template tells InvoXcel what data you want. It does not describe a particular supplier’s invoice design.</p>
           <p>Summary data and line items stay distinct, so exports can keep both datasets clear.</p>
         </aside>

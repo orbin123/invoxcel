@@ -87,6 +87,29 @@ class WorkflowTests(AuthenticatedTestCase):
         self.assertRedirects(self.client.post(url), self.url)
         self.assertIsNone(Invoice.objects.get(pk=self.invoice.pk).reviewed_at)
 
+    def test_output_preview_keeps_saved_line_items_separate_and_in_column_order(self):
+        response = self.client.get(self.url)
+        columns = response.context["item_columns"]
+        items = list(self.invoice.line_items.all())
+        rows = response.context["item_output_rows"]
+        self.assertEqual(len(rows), len(items))
+        for row, item in zip(rows, items):
+            self.assertEqual(row["document_id"], self.invoice.analysis.document_id)
+            self.assertEqual([cell["value"] for cell in row["cells"]],
+                             [item.values.get(column.key) for column in columns])
+        self.assertContains(response, 'id="export-format"')
+        self.assertContains(response, "The Exceptions sheet includes source filenames")
+
+    def test_excel_metadata_note_matches_existing_export_sheets(self):
+        self.client.post(self.url, self.edit_data())
+        response = self.client.post(reverse("exports:download", args=[self.batch.pk, "xlsx"]))
+        workbook = load_workbook(io.BytesIO(response.content))
+        for name in ("Invoice Summary", "Line Items"):
+            headers = [cell.value for cell in workbook[name][1]]
+            self.assertNotIn("Source file", headers)
+            self.assertNotIn("Review status", headers)
+        self.assertIn("Source filename", [cell.value for cell in workbook["Exceptions"][1]])
+
     def test_invalid_edit_does_not_persist_any_change(self):
         data = self.edit_data()
         data.update({"summary-grand_total": "NaN", "summary-vendor_name": "Should not persist"})

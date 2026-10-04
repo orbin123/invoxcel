@@ -42,8 +42,8 @@
           <a class="text-link" href="{% url 'templates:create' %}" data-require-auth data-auth-message="Sign in to manage templates.">Create a template</a>
         {% endif %}
       </div>
-      <p class="small" style="padding: 0 20px 12px">Choose None to detect columns automatically.</p>
-      <p class="small" style="padding: 0 20px 12px">Azure S0 · {{ upload_form.max_upload_mb }} MB per file · {{ upload_form.max_pages }} pages per PDF/TIFF. One invoice per file.</p>
+      <p class="small upload-guidance">Choose None to detect columns automatically.</p>
+      <p class="small upload-guidance">{{ upload_form.max_upload_mb }} MB per file · {{ upload_form.max_pages }} pages per PDF/TIFF. One invoice per file.</p>
       <div id="upload-empty"{% if upload_form.document.errors %} class="has-error"{% endif %}>
         <div class="drop-zone">
           <span class="upload-illustration" aria-hidden="true"><span class="back-sheet"></span><svg viewBox="0 0 70 82"><path d="M12 2h32l14 14v62H12z"/><path d="M44 2v15h14M23 30h24M23 38h24M23 46h15"/><rect x="31" y="51" width="32" height="29" rx="5"/><path d="M47 72V59m-5 5 5-5 5 5"/></svg></span>

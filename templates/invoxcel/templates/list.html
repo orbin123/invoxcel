@@ -7,9 +7,10 @@
   <title>Templates · InvoXcel</title>
   {% include "invoxcel/partials/favicon.html" %}
   {% include "invoxcel/partials/styles.html" %}
+  {% include "invoxcel/partials/public_design.html" %}
   {% include "invoxcel/templates/styles.html" %}
 </head>
-<body>
+<body class="public-page template-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
@@ -20,7 +21,7 @@
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M6 4h20l6 6v22H6z" fill="currentColor"/><path d="M26 4v6h6M12 12l10 14m0-14L12 26M26 15h3m-3 5h3m-3 5h3" fill="none" stroke="white" stroke-width="2"/></svg></span>
       <span>InvoXcel</span>
     </a>
-    <nav class="public-nav" aria-label="Main navigation">
+    {% include "invoxcel/partials/navigation_toggle.html" %}<nav id="main-navigation" class="public-nav" aria-label="Main navigation">
       <a href="{% url 'uploads:upload' %}">Overview</a>
       <a href="{% url 'uploads:upload' %}#batches">My batches</a>
       <a href="{% url 'templates:list' %}" aria-current="page">Templates</a>
@@ -46,17 +47,30 @@
               </div>
               <p class="template-count">{{ template.columns.count }} columns</p>
             </div>
-            <div class="template-columns" aria-label="Columns in {{ template.name }}">
-              {% for column in template.columns.all %}
-                <span class="column-chip{% if column.dataset == 'line_item' %} is-line-item{% endif %}">{{ column.label }}</span>
-              {% endfor %}
+            <div class="template-datasets" aria-label="Columns in {{ template.name }}">
+              <section class="template-dataset" aria-label="Summary columns">
+                <h3>Invoice summary</h3>
+                <div class="template-columns">
+                  {% for column in template.columns.all %}{% if column.dataset == 'summary' %}
+                    <span class="column-chip">{{ column.label }}</span>
+                  {% endif %}{% endfor %}
+                </div>
+              </section>
+              <section class="template-dataset" aria-label="Line item columns">
+                <h3>Line items</h3>
+                <div class="template-columns">
+                  {% for column in template.columns.all %}{% if column.dataset == 'line_item' %}
+                    <span class="column-chip">{{ column.label }}</span>
+                  {% endif %}{% endfor %}
+                </div>
+              </section>
             </div>
             <div class="template-actions">
               {% if template.is_standard %}
                 <span class="template-standard-note">Always available</span>
               {% else %}
-                <a class="text-link" href="{% url 'templates:edit' template.pk %}">Edit</a>
-                <a class="text-link attention" href="{% url 'templates:delete' template.pk %}">Delete</a>
+                <a class="text-link" href="{% url 'templates:edit' template.pk %}">Edit<span class="sr-only"> {{ template.name }}</span></a>
+                <a class="text-link attention" href="{% url 'templates:delete' template.pk %}">Delete<span class="sr-only"> {{ template.name }}</span></a>
               {% endif %}
             </div>
           </article>

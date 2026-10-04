@@ -1,0 +1,210 @@
+/* Public pages only: the shared workspace styles remain independent. */
+@font-face { font-family: Newsreader; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/newsreader-400.ttf') format('truetype'); }
+@font-face { font-family: Newsreader; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/newsreader-500.ttf') format('truetype'); }
+@font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/public-sans-400.ttf') format('truetype'); }
+@font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/public-sans-500.ttf') format('truetype'); }
+@font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/public-sans-600.ttf') format('truetype'); }
+@font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/public-sans-700.ttf') format('truetype'); }
+
+.public-page {
+  /* --color-primary is inherited from the shared brand token. */
+  --color-surface: #F7F8F2;
+  --color-canvas: #E7EDE3;
+  --color-text: #203D2D;
+  --color-secondary: #59685D;
+  --color-line: color-mix(in srgb, var(--color-text) 20%, var(--color-surface));
+  --color-soft: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  --font-ui: 'Public Sans', sans-serif;
+  --font-display: Newsreader, 'Iowan Old Style', serif;
+  --ease-ui: cubic-bezier(.2,.7,.2,1);
+  font-family: var(--font-ui);
+  background: var(--color-surface);
+}
+.public-page .page-width { width: min(1320px, calc(100% - 112px)); }
+.public-page .site-header { height: 88px; padding-inline: max(40px, calc((100vw - 1320px) / 2)); background: var(--color-surface); }
+.public-page .brand, .public-page .footer-wordmark { font-family: var(--font-display); font-weight: 500; font-size: 32px; letter-spacing: -.045em; }
+.public-page .brand-mark { width: 31px; height: 35px; }
+.public-page .public-nav { gap: 32px; font-size: 13px; }
+.public-page .button { border-radius: 4px; min-height: 48px; font-weight: 600; transition: transform 180ms var(--ease-ui), background-color 180ms var(--ease-ui), border-color 180ms var(--ease-ui); }
+.public-page .button:active { transform: translateY(1px); }
+.public-page .button-primary { color: white; }
+.public-page .button-outline { border-color: var(--color-secondary); }
+.public-page :is(input:not([type=checkbox]), select, textarea) { border-radius: 3px; border-color: var(--color-line); }
+.public-page :is(input, select, textarea):focus-visible { outline-width: 2px; }
+.public-page .home-screen { background: radial-gradient(ellipse at 88% 16%, var(--color-canvas), transparent 42%); }
+.public-page .home-hero { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 100px); padding-block: 76px 64px; align-items: center; }
+.public-page .hero-copy h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(56px, 5.6vw, 82px); line-height: .99; letter-spacing: -.045em; max-width: 650px; text-wrap: balance; }
+.public-page .hero-description { margin-top: 28px; font-size: 16px; line-height: 1.8; max-width: 440px; }
+.public-page .hero-actions { margin-top: 32px; gap: 16px 25px; }
+.public-page .hero-note { margin-top: 48px; padding-left: 16px; border-left: 2px solid var(--color-primary); }
+.public-page .mini-grid { display: none; }
+.public-page .hero-note p { font-size: 13px; line-height: 1.75; }
+.public-page .upload-workbench { border: 1px solid var(--color-line); border-top: 5px solid var(--color-primary); border-radius: 5px; box-shadow: 0 18px 45px -26px color-mix(in srgb, var(--color-text) 35%, transparent); }
+.public-page .panel-heading { padding: 24px 28px 20px; }
+.public-page .panel-heading h2 { font-family: var(--font-display); font-size: 31px; font-weight: 500; line-height: 1.1; }
+.public-page .template-picker { margin: 0 28px 14px; padding-bottom: 14px; }
+.public-page .template-picker .text-link { grid-column: 2; grid-row: 1; font-size: 12px; }
+.public-page .select-field select { min-height: 48px; font-size: 14px; }
+.public-page .upload-guidance { padding: 0 28px 10px; font-size: 12px; line-height: 1.6; }
+.public-page #upload-empty, .public-page #upload-filled { padding-inline: 28px; }
+.public-page #upload-empty { padding-bottom: 28px; }
+.public-page .drop-zone { padding: 24px 16px; border-radius: 3px; background: linear-gradient(135deg, var(--color-soft), var(--color-surface)); text-align: center; }
+.public-page .upload-illustration { width: 55px; height: 60px; }
+.public-page .upload-illustration > svg { width: 51px; height: 60px; }
+.public-page .drop-zone > strong { margin-top: 14px; font-size: 18px; }
+.public-page .drop-zone > span:not(.upload-illustration) { font-size: 12px; }
+.public-page .choose-files { margin-top: 18px; min-height: 44px; box-shadow: none; }
+.public-page .format-strip { padding-block: 23px 28px; font-size: 12px; }
+.public-page .format-strip > div { color: var(--color-text); }
+.public-page .review-story { padding-block: 84px; background: var(--color-canvas); }
+.public-page .story-grid { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 65px; }
+.public-page .story-copy h2 { font-family: var(--font-display); font-size: clamp(34px, 3.3vw, 48px); font-weight: 400; line-height: 1.08; letter-spacing: -.035em; }
+.public-page .story-copy > p { font-size: 14px; line-height: 1.85; }
+.public-page .comparison-sample { position: relative; padding: 30px 0; }
+.public-page .mini-document { padding: 28px 20px; border-radius: 2px; }
+.public-page .mini-extract { border-radius: 3px; box-shadow: none; }
+.public-page .mini-document-brand { font-size: 12px; }
+.public-page .mini-invoice-meta, .public-page .mini-line { font-size: 12px; }
+.public-page .mini-total { font-size: 13px; margin-top: 24px; }
+.public-page .mini-extract-header, .public-page .mini-selected { font-size: 12px; }
+.public-page .mini-extract .mini-line { font-size: 11px; }
+.public-page .mini-line strong, .public-page .mini-total strong, .public-page .mini-selected strong { font-variant-numeric: tabular-nums; }
+.public-page .connection { width: 32px; flex-shrink: 0; }
+.public-page .how-section { padding-block: 72px; }
+.public-page .section-heading { align-items: end; }
+.public-page .section-heading h2, .public-page #batches > h2 { font-family: var(--font-display); font-size: 40px; font-weight: 400; line-height: 1.1; }
+.public-page .workflow-explainer { grid-template-columns: 1fr; gap: 0; margin-top: 32px; }
+.public-page .workflow-explainer li { align-items: baseline; gap: 28px; padding: 25px 0; border-top: 1px solid var(--color-line); }
+.public-page .workflow-explainer li > div { display: grid; grid-template-columns: minmax(200px, .85fr) 1.4fr; gap: 40px; flex: 1; align-items: baseline; }
+.public-page .step-number { font-family: var(--font-display); font-size: 27px; background: none; width: 30px; height: auto; font-weight: 400; }
+.public-page .workflow-explainer h3 { font-size: 17px; font-weight: 500; }
+.public-page .workflow-explainer p { margin: 0; max-width: 530px; font-size: 14px; }
+.public-page #batches { padding-top: 0; }
+.public-page .batch-list { margin-top: 24px; }
+.public-page .batch-list-empty { padding: 24px; background: var(--color-soft); border-left: 2px solid var(--color-primary); font-size: 14px; }
+.public-page .site-footer { padding-block: 28px 36px; }
+.public-page .site-footer .footer-wordmark { font-size: 27px; }
+
+/* A ledger-like left panel gives the authentication forms a distinct setting. */
+.account-page .login-screen { background: var(--color-surface); }
+.account-page .login-layout { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(40px, 7vw, 110px); padding-block: 48px; align-items: center; }
+.account-page .login-aside { padding: 40px; border-radius: 5px; color: var(--color-surface); background-color: var(--color-text); background-image: linear-gradient(90deg, transparent calc(100% - 1px), color-mix(in srgb, var(--color-surface) 5%, transparent) 1px); background-size: 56px 100%; }
+.account-page .login-aside > .text-link { color: var(--color-surface); margin-bottom: 56px; font-size: 12px; }
+.account-page .login-aside :focus-visible { outline-color: var(--color-surface); }
+.account-page .login-aside h1 { font-family: var(--font-display); font-size: clamp(44px, 4.6vw, 66px); line-height: 1.02; font-weight: 400; letter-spacing: -.035em; }
+.account-page .login-aside > p { color: color-mix(in srgb, var(--color-surface) 78%, var(--color-text)); font-size: 14px; line-height: 1.8; margin-top: 22px; }
+.account-page .login-aside > p br { display: none; }
+.account-page .login-sheet { transform: none; margin-top: 44px; color: var(--color-text); border: 0; border-radius: 3px; box-shadow: none; }
+.account-page .login-sheet-title { padding: 18px 16px; font-size: 12px; }
+.account-page .login-sheet-row { font-size: 11px; gap: 10px; padding-block: 15px; }
+.account-page .login-sheet-footer { padding-block: 15px; font-size: 11px; }
+.account-page .login-content { padding: 24px 0; max-width: 420px; width: 100%; background: none; border: 0; border-radius: 0; }
+.account-page .login-symbol { margin-bottom: 22px; }
+.account-page .login-content h2 { font-family: var(--font-display); font-size: 46px; font-weight: 400; line-height: 1.05; letter-spacing: -.04em; }
+.account-page .login-content > p { font-size: 14px; line-height: 1.7; }
+.account-page .login-fields { margin-top: 28px; }
+.account-page .field-label { margin-top: 20px; font-size: 13px; }
+.account-page .login-fields input { height: 50px; background: color-mix(in srgb, var(--color-surface) 65%, var(--color-canvas)); }
+.account-page .password-field .icon-button { top: 5px; right: 5px; }
+.account-page .login-fields > .button { margin-top: 28px; min-height: 50px; }
+.account-page .login-divider { font-size: 12px; margin-block: 24px; }
+.account-page .login-content > .login-hint { font-size: 13px; margin-top: 20px; }
+
+@keyframes public-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: no-preference) {
+  .public-page .hero-copy, .account-page .login-aside { animation: public-enter 260ms var(--ease-ui) both; }
+  .public-page .upload-workbench, .account-page .login-content { animation: public-enter 260ms var(--ease-ui) 80ms both; }
+}
+@media (max-width: 1100px) {
+  .public-page .page-width { width: calc(100% - 64px); }
+  .public-page .home-hero { gap: 36px; }
+  .public-page .hero-copy h1 { font-size: 62px; }
+  .public-page .story-grid { grid-template-columns: 1fr; gap: 24px; }
+  .public-page .story-copy { max-width: 640px; }
+  .public-page .story-copy > p { max-width: 560px; }
+  .public-page .comparison-sample { max-width: 720px; width: 100%; justify-self: end; }
+  .account-page .login-layout { gap: 40px; }
+  .account-page .login-aside { padding: 28px; }
+  .account-page .login-sheet-row { grid-template-columns: 1fr auto; }
+  .account-page .login-sheet-row > .icon { display: none; }
+}
+@media (max-width: 800px) {
+  .public-page .site-header { padding-inline: 24px; height: 76px; }
+  .public-page .public-nav { display: none; }
+  .public-page .home-hero { grid-template-columns: 1fr; padding-block: 48px; }
+  .public-page .hero-copy h1 { font-size: clamp(48px, 8.7vw, 68px); max-width: 620px; }
+  .public-page .hero-description { max-width: 530px; }
+  .public-page .hero-actions { flex-direction: row; }
+  .public-page .hero-note { margin-top: 28px; }
+  .public-page .upload-workbench { width: 100%; }
+  .public-page .workflow-explainer li > div { grid-template-columns: 1fr; gap: 8px; }
+  .account-page .login-layout { grid-template-columns: 1fr; max-width: 580px; padding-block: 24px 48px; gap: 30px; }
+  .account-page .login-aside { padding: 28px; }
+  .account-page .login-aside > .text-link { margin-bottom: 24px; }
+  .account-page .login-aside h1 { font-size: 44px; }
+  .account-page .login-aside h1 br { display: none; }
+  .account-page .login-aside > p { margin-top: 12px; }
+  .account-page .login-sheet { display: none; }
+  .account-page .login-content { max-width: none; padding: 0 16px; }
+  .account-page .login-symbol { display: none; }
+}
+@media (max-width: 480px) {
+  .public-page .page-width { width: calc(100% - 40px); }
+  .public-page .site-header { padding-inline: 20px; gap: 12px; }
+  .public-page .brand { font-size: 27px; gap: 5px; }
+  .public-page .brand-mark { width: 25px; }
+  .public-page .header-auth { gap: 6px; }
+  .public-page .header-auth .button { min-height: 42px; padding: 9px 10px; font-size: 12px; }
+  .public-page .hero-actions { flex-direction: column; align-items: stretch; }
+  .public-page .hero-description { font-size: 15px; }
+  .public-page .panel-heading { padding: 22px 20px 18px; }
+  .public-page .template-picker { margin-inline: 20px; }
+  .public-page .upload-guidance, .public-page #upload-empty, .public-page #upload-filled { padding-inline: 20px; }
+  .public-page .format-strip { font-size: 12px; }
+  .public-page .format-strip > div { gap: 18px; flex-wrap: wrap; }
+  .public-page .review-story { padding-block: 48px; }
+  .public-page .comparison-sample { flex-direction: column; align-items: stretch; padding: 0; }
+  .public-page .mini-document { margin-right: 28px; }
+  .public-page .mini-document .mini-line, .public-page .mini-invoice-meta { font-size: 12px; }
+  .public-page .mini-document-foot { font-size: 10px; }
+  .public-page .mini-extract { margin: 20px 0 0 28px; }
+  .public-page .mini-extract .mini-line, .public-page .matched-label { font-size: 12px; }
+  .public-page .mini-extract-header { padding: 14px; }
+  .public-page .mini-selected { flex-direction: row; font-size: 13px; }
+  .public-page .connection { display: none; }
+  .public-page .how-section { padding-block: 48px; }
+  .public-page .section-heading h2, .public-page #batches > h2 { font-size: 34px; }
+  .public-page .section-heading { align-items: start; }
+  .public-page .workflow-explainer li { gap: 16px; }
+  .public-page .batch-row { flex-wrap: wrap; gap: 8px; }
+  .public-page .batch-row > a { overflow-wrap: anywhere; }
+  .public-page .batch-row-meta { align-items: start; }
+  .account-page .login-aside { padding: 24px; }
+  .account-page .login-aside h1 { font-size: 39px; }
+  .account-page .login-content { padding-inline: 4px; }
+  .account-page .login-content h2 { font-size: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .public-page .button, .public-page .auth-toast { transition: none; }
+}
+
+/* The same navigation becomes a keyboard-accessible disclosure on small screens. */
+.navigation-toggle { display: none; }
+@media (max-width: 1000px) {
+  .public-page .site-header { gap: 12px; }
+  .public-page .header-user-email { display: none; }
+  .public-page .navigation-enhanced .navigation-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 44px; margin-left: auto; padding: 8px; border-radius: 4px; color: var(--color-primary); font-size: 13px; }
+  .public-page .navigation-toggle:hover, .public-page .navigation-toggle[aria-expanded="true"] { background: var(--color-soft); }
+  .public-page .navigation-enhanced .public-nav { display: none; position: absolute; top: calc(100% + 8px); right: 20px; left: 20px; z-index: 30; padding: 12px; border: 1px solid var(--color-line); border-radius: 10px; background: var(--color-surface); box-shadow: 0 14px 36px color-mix(in srgb, var(--color-text) 12%, transparent); }
+  .public-page .navigation-enhanced .public-nav.is-open { display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
+  .public-page .public-nav a { min-height: 44px; padding: 12px; border-radius: 7px; font-size: 14px; }
+  .public-page .public-nav a:hover, .public-page .public-nav a[aria-current] { background: var(--color-soft); }
+  .public-page .site-header:not(.navigation-enhanced) { height: auto; min-height: 76px; flex-wrap: wrap; padding-block: 12px; }
+  .public-page .site-header:not(.navigation-enhanced) .public-nav { display: flex; order: 3; width: 100%; gap: 8px; flex-wrap: wrap; }
+}
+@media (max-width: 380px) {
+  .public-page .navigation-toggle span { display: none; }
+  .public-page .site-header { padding-inline: 12px; gap: 6px; }
+  .public-page .brand { font-size: 24px; }
+  .public-page .brand-mark { display: none; }
+}
