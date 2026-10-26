@@ -6,9 +6,10 @@ InvoXcel is a local Django MVP for accountants, bookkeepers, and finance teams. 
 
 ## Watch the application walkthrough
 
-[![InvoXcel review workspace — click to watch the walkthrough](assets/demo/workspace.png)](https://github.com/orbin123/invoxcel/raw/refs/heads/main/assets/demo/walkthrough.mp4)
 
-**[Watch or download the 53-second walkthrough (MP4)](https://github.com/orbin123/invoxcel/raw/refs/heads/main/assets/demo/walkthrough.mp4)**
+https://github.com/user-attachments/assets/90f19f59-a6c6-441c-a674-c2a67312f54f
+
+
 
 The recording shows sign-in, template selection, invoice upload, source comparison, summary and line-item edits, review approval, Excel export, and the template register. It is a recording of the running application using a synthetic invoice and the repository's deterministic Azure-response fixture. Extraction in this recording is simulated; it makes no live Azure request. The normal application uses Azure and requires your own credentials. The video has on-screen explanations and no audio.
 
